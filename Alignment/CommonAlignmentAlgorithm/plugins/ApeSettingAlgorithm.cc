@@ -71,13 +71,14 @@ public:
                   AlignableTracker *tracker,
                   AlignableMuon *muon,
                   AlignableExtras *extras,
-                  AlignmentParameterStore *store) override;
+                  AlignmentParameterStore *store,
+                  edm::ConsumesCollector &iC) override;
 
   /// Call at end of job
   void terminate(const edm::EventSetup &iSetup) override;
 
   /// Run the algorithm
-  void run(const edm::EventSetup &setup, const EventInfo &eventInfo) override;
+  void run(const edm::EventSetup &setup, const EventInfo &eventInfo, edm::ConsumesCollector &iC) override;
 
 private:
   edm::ParameterSet theConfig;
@@ -118,7 +119,8 @@ void ApeSettingAlgorithm::initialize(const edm::EventSetup &setup,
                                      AlignableTracker *tracker,
                                      AlignableMuon *muon,
                                      AlignableExtras *extras,
-                                     AlignmentParameterStore *store) {
+                                     AlignmentParameterStore *store,
+                                     edm::ConsumesCollector &iC) {
   theAlignableNavigator = new AlignableNavigator(tracker, muon);
   theTracker = tracker;
 
@@ -252,7 +254,7 @@ void ApeSettingAlgorithm::terminate(const edm::EventSetup &iSetup) {
 
 // Run the algorithm on trajectories and tracks -------------------------------
 //____________________________________________________
-void ApeSettingAlgorithm::run(const edm::EventSetup &setup, const EventInfo &eventInfo) {
+void ApeSettingAlgorithm::run(const edm::EventSetup &setup, const EventInfo &eventInfo, edm::ConsumesCollector &iC) {
   // nothing to do here?
 }
 
