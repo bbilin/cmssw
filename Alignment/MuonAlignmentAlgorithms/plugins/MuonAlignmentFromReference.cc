@@ -80,11 +80,12 @@ public:
                   AlignableTracker* alignableTracker,
                   AlignableMuon* alignableMuon,
                   AlignableExtras* extras,
-                  AlignmentParameterStore* alignmentParameterStore) override;
+                  AlignmentParameterStore* alignmentParameterStore,
+                  edm::ConsumesCollector& iC) override;
 
   void startNewLoop() override{};
 
-  void run(const edm::EventSetup& iSetup, const EventInfo& eventInfo) override;
+  void run(const edm::EventSetup& iSetup, const EventInfo& eventInfo, edm::ConsumesCollector& iC) override;
 
   void processMuonResidualsFromTrack(MuonResidualsFromTrack& mrft);
 
@@ -307,7 +308,8 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
                                             AlignableTracker* alignableTracker,
                                             AlignableMuon* alignableMuon,
                                             AlignableExtras* extras,
-                                            AlignmentParameterStore* alignmentParameterStore) {
+                                            AlignmentParameterStore* alignmentParameterStore,
+                                            edm::ConsumesCollector& iC) {
   if (alignableMuon == nullptr)
     throw cms::Exception("MuonAlignmentFromReference") << "doMuon must be set to True" << std::endl;
 
@@ -436,7 +438,9 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
   alignmentParameterStore->setAlignmentPositionError(reference, 0., 0.);
 }
 
-void MuonAlignmentFromReference::run(const edm::EventSetup& iSetup, const EventInfo& eventInfo) {
+void MuonAlignmentFromReference::run(const edm::EventSetup& iSetup,
+                                     const EventInfo& eventInfo,
+                                     edm::ConsumesCollector& iC) {
   if (m_debug)
     std::cout << "****** EVENT START *******" << std::endl;
   m_counter_events++;

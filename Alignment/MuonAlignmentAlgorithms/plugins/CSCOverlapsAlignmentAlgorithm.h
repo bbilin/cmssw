@@ -67,8 +67,9 @@ public:
                   AlignableTracker *alignableTracker,
                   AlignableMuon *alignableMuon,
                   AlignableExtras *alignableExtras,
-                  AlignmentParameterStore *alignmentParameterStore) override;
-  void run(const edm::EventSetup &iSetup, const EventInfo &eventInfo) override;
+                  AlignmentParameterStore *alignmentParameterStore,
+                  edm::ConsumesCollector &iC) override;
+  void run(const edm::EventSetup &iSetup, const EventInfo &eventInfo, edm::ConsumesCollector &iC) override;
 
   void terminate(const edm::EventSetup &iSetup) override;
 

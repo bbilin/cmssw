@@ -46,7 +46,8 @@ public:
                   AlignableTracker* tracker,
                   AlignableMuon* muon,
                   AlignableExtras* extras,
-                  AlignmentParameterStore* store) override;
+                  AlignmentParameterStore* store,
+                  edm::ConsumesCollector& iC) override;
 
   /// Call at end of job
   void terminate(const edm::EventSetup& setup) override;
@@ -55,7 +56,7 @@ public:
   void startNewLoop(void) override;
 
   /// Run the algorithm
-  void run(const edm::EventSetup& setup, const EventInfo& eventInfo) override;
+  void run(const edm::EventSetup& setup, const EventInfo& eventInfo, edm::ConsumesCollector& iC) override;
 
 private:
   bool processHit1D(const AlignableDetOrUnitPtr& alidet,

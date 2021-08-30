@@ -33,7 +33,7 @@ void AlignmentProducerAsAnalyzer::endJob() {}
 
 //------------------------------------------------------------------------------
 void AlignmentProducerAsAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& setup) {
-  beginRunImpl(run, setup);
+  beginRunImpl(run, setup, consumesCollector());
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ void AlignmentProducerAsAnalyzer::endProcessBlockProduce(edm::ProcessBlock& proc
 
 //------------------------------------------------------------------------------
 void AlignmentProducerAsAnalyzer::accumulate(edm::Event const& event, edm::EventSetup const& setup) {
-  processEvent(event, setup);
+  processEvent(event, setup, consumesCollector());
 }
 
 DEFINE_FWK_MODULE(AlignmentProducerAsAnalyzer);
