@@ -10,6 +10,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 /// Base class for factories producing reference trajectories, i.e. instances of classes deriving from
 /// ReferenceTrajectoryBase, from a TrajTrackPairCollection.
 
@@ -27,18 +28,27 @@ public:
   typedef std::pair<TrajectoryStateOnSurface, TransientTrackingRecHit::ConstRecHitContainer> TrajectoryInput;
   typedef std::vector<TrajectoryStateOnSurface> ExternalPredictionCollection;
 
-  TrajectoryFactoryBase(const edm::ParameterSet& config);
-  TrajectoryFactoryBase(const edm::ParameterSet& config, unsigned int tracksPerTrajectory);
+  TrajectoryFactoryBase(const edm::ParameterSet& config, const edm::ConsumesCollector &iC);
+  TrajectoryFactoryBase(const edm::ParameterSet& config, unsigned int tracksPerTrajectory, const edm::ConsumesCollector &iC);
   virtual ~TrajectoryFactoryBase(void);
 
   virtual const ReferenceTrajectoryCollection trajectories(const edm::EventSetup& setup,
                                                            const ConstTrajTrackPairCollection& tracks,
-                                                           const reco::BeamSpot& beamSpot) const = 0;
+                                                           const reco::BeamSpot& beamSpot, edm::ConsumesCollector &iC) const = 0;
 
   virtual const ReferenceTrajectoryCollection trajectories(const edm::EventSetup& setup,
                                                            const ConstTrajTrackPairCollection& tracks,
                                                            const ExternalPredictionCollection& external,
-                                                           const reco::BeamSpot& beamSpot) const = 0;
+                                                           const reco::BeamSpot& beamSpot, edm::ConsumesCollector &iC) const = 0;
+
+//  virtual const ReferenceTrajectoryCollection trajectories(const edm::EventSetup& setup,
+//                                                           const ConstTrajTrackPairCollection& tracks,
+//                                                           const reco::BeamSpot& beamSpot) const = 0;
+
+//  virtual const ReferenceTrajectoryCollection trajectories(const edm::EventSetup& setup,
+//                                                           const ConstTrajTrackPairCollection& tracks,
+//                                                           const ExternalPredictionCollection& external,
+//                                                           const reco::BeamSpot& beamSpot) const = 0;
 
   virtual TrajectoryFactoryBase* clone(void) const = 0;
 
