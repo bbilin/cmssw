@@ -122,7 +122,8 @@ public:
                           AlignableTracker *tracker,
                           AlignableMuon *muon,
                           AlignableExtras *extras,
-                          AlignmentParameterStore *store) = 0;
+                          AlignmentParameterStore *store,
+                          edm::ConsumesCollector &iC) = 0;
 
   /// Returns whether calibrations is supported by algorithm,
   /// default implementation returns false.
@@ -158,7 +159,7 @@ public:
   virtual void terminate() {}
 
   /// Run the algorithm (must be implemented in derived class)
-  virtual void run(const edm::EventSetup &setup, const EventInfo &eventInfo) = 0;
+  virtual void run(const edm::EventSetup &setup, const EventInfo &eventInfo, edm::ConsumesCollector &iC) = 0;
 
   /// called at begin of run
   virtual void beginRun(const edm::Run &, const edm::EventSetup &, bool changed){};

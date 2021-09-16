@@ -37,7 +37,7 @@ std::shared_ptr<TrackerGeometry> AlignmentProducer::produceTracker(const Tracker
 //------------------------------------------------------------------------------
 void AlignmentProducer::beginOfJob(const edm::EventSetup &iSetup) {
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::beginOfJob";
-  initAlignmentAlgorithm(iSetup);
+  initAlignmentAlgorithm(iSetup, consumesCollector());
 }
 
 //------------------------------------------------------------------------------
@@ -83,14 +83,16 @@ edm::EDLooper::Status AlignmentProducer::endOfLoop(const edm::EventSetup &iSetup
 
 //------------------------------------------------------------------------------
 edm::EDLooper::Status AlignmentProducer::duringLoop(const edm::Event &event, const edm::EventSetup &setup) {
-  if (processEvent(event, setup))
+  if (processEvent(event, setup, consumesCollector()))
     return kContinue;
   else
     return kStop;
 }
 
 //------------------------------------------------------------------------------
-void AlignmentProducer::beginRun(const edm::Run &run, const edm::EventSetup &setup) { beginRunImpl(run, setup); }
+void AlignmentProducer::beginRun(const edm::Run &run, const edm::EventSetup &setup) {
+  beginRunImpl(run, setup, consumesCollector());
+}
 
 //------------------------------------------------------------------------------
 void AlignmentProducer::endRun(const edm::Run &run, const edm::EventSetup &setup) { endRunImpl(run, setup); }
