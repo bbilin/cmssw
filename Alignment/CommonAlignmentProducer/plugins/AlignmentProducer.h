@@ -24,7 +24,7 @@ public:
   virtual std::shared_ptr<TrackerGeometry> produceTracker(const TrackerDigiGeometryRecord&);
 
   /// Called at beginning of job
-  void beginOfJob(const edm::EventSetup&) override;
+  void beginOfJob(const edm::EventSetup&, edm::ConsumesCollector iC) override;
 
   /// Called at end of job
   void endOfJob() override;
@@ -36,7 +36,7 @@ public:
   Status endOfLoop(const edm::EventSetup&, unsigned int iLoop) override;
 
   /// Called at run start and calling algorithms beginRun
-  void beginRun(const edm::Run&, const edm::EventSetup&) override;
+  void beginRun(const edm::Run&, const edm::EventSetup&, edm::ConsumesCollector) override;
 
   /// Called at run end - currently reading TkFittedLasBeam if an InpuTag is given for that
   void endRun(const edm::Run&, const edm::EventSetup&) override;
@@ -48,7 +48,7 @@ public:
   void endLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) override;
 
   /// Called at each event
-  Status duringLoop(const edm::Event&, const edm::EventSetup&) override;
+  Status duringLoop(const edm::Event&, const edm::EventSetup&, edm::ConsumesCollector) override;
 
 private:
   bool getTrajTrackAssociationCollection(const edm::Event&, edm::Handle<TrajTrackAssociationCollection>&) override;
