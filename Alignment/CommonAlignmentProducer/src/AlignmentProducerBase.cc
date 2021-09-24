@@ -150,7 +150,9 @@ void AlignmentProducerBase::terminateProcessing(const edm::EventSetup* setup) {
 }
 
 //------------------------------------------------------------------------------
-bool AlignmentProducerBase::processEvent(const edm::Event& event, const edm::EventSetup& setup) {
+bool AlignmentProducerBase::processEvent(const edm::Event& event,
+                                         const edm::EventSetup& setup,
+                                         edm::ConsumesCollector iC) {
   if (setupChanged(setup)) {
     edm::LogInfo("Alignment") << "@SUB=AlignmentProducerBase::processEvent"
                               << "EventSetup-Record changed.";
@@ -158,9 +160,9 @@ bool AlignmentProducerBase::processEvent(const edm::Event& event, const edm::Eve
     // updatable alignables are currently not used at PCL, but event setup
     // changes require a complete re-initialization
     if (runAtPCL_) {
-      initAlignmentAlgorithm(setup, /* update = */ false);
+      initAlignmentAlgorithm(setup, iC, /* update = */ false);
     } else if (enableAlignableUpdates_) {
-      initAlignmentAlgorithm(setup, /* update = */ true);
+      initAlignmentAlgorithm(setup, iC, /* update = */ true);
     }
   }
 
@@ -207,7 +209,7 @@ bool AlignmentProducerBase::processEvent(const edm::Event& event, const edm::Eve
     }
 
     const AlignmentAlgorithmBase::EventInfo eventInfo{event.id(), trajTracks, *beamSpot_, clusterValueMapPtr};
-    alignmentAlgo_->run(setup, eventInfo);
+    alignmentAlgo_->run(setup, eventInfo, iC);
 
     for (const auto& monitor : monitors_) {
       monitor->duringLoop(event, setup, trajTracks);  // forward eventInfo?
@@ -221,7 +223,7 @@ bool AlignmentProducerBase::processEvent(const edm::Event& event, const edm::Eve
 }
 
 //------------------------------------------------------------------------------
-void AlignmentProducerBase::beginRunImpl(const edm::Run& run, const edm::EventSetup& setup) {
+void AlignmentProducerBase::beginRunImpl(const edm::Run& run, const edm::EventSetup& setup, edm::ConsumesCollector iC) {
   const bool changed{setupChanged(setup)};
   if (changed) {
     edm::LogInfo("Alignment") << "@SUB=AlignmentProducerBase::beginRunImpl"
@@ -230,9 +232,9 @@ void AlignmentProducerBase::beginRunImpl(const edm::Run& run, const edm::EventSe
     // updatable alignables are currently not used at PCL, but event setup
     // changes require a complete re-initialization
     if (runAtPCL_) {
-      initAlignmentAlgorithm(setup, /* update = */ false);
+      initAlignmentAlgorithm(setup, iC, /* update = */ false);
     } else if (enableAlignableUpdates_) {
-      initAlignmentAlgorithm(setup, /* update = */ true);
+      initAlignmentAlgorithm(setup, iC, /* update = */ true);
     }
   }
 
@@ -358,7 +360,9 @@ bool AlignmentProducerBase::setupChanged(const edm::EventSetup& setup) {
 }
 
 //------------------------------------------------------------------------------
-void AlignmentProducerBase::initAlignmentAlgorithm(const edm::EventSetup& setup, bool update) {
+void AlignmentProducerBase::initAlignmentAlgorithm(const edm::EventSetup& setup,
+                                                   edm::ConsumesCollector iC,
+                                                   bool update) {
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducerBase::initAlignmentAlgorithm"
                             << "Begin";
 
@@ -380,7 +384,7 @@ void AlignmentProducerBase::initAlignmentAlgorithm(const edm::EventSetup& setup,
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducerBase::initAlignmentAlgorithm"
                             << "Initializing alignment algorithm.";
   alignmentAlgo_->initialize(
-      setup, alignableTracker_.get(), alignableMuon_.get(), alignableExtras_.get(), alignmentParameterStore_.get());
+      setup, alignableTracker_.get(), alignableMuon_.get(), alignableExtras_.get(), alignmentParameterStore_.get(), iC);
 
   // Not all algorithms support calibrations - so do not pass empty vector
   // and throw if non-empty and not supported:

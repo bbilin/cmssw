@@ -23,17 +23,19 @@
 
 class CombinedTrajectoryFactory : public TrajectoryFactoryBase {
 public:
-  CombinedTrajectoryFactory(const edm::ParameterSet &config);
+  CombinedTrajectoryFactory(const edm::ParameterSet &config, edm::ConsumesCollector &iC);
   ~CombinedTrajectoryFactory() override;
 
   const ReferenceTrajectoryCollection trajectories(const edm::EventSetup &setup,
                                                    const ConstTrajTrackPairCollection &tracks,
-                                                   const reco::BeamSpot &beamSpot) const override;
+                                                   const reco::BeamSpot &beamSpot,
+                                                   edm::ConsumesCollector &iC) const override;
 
   const ReferenceTrajectoryCollection trajectories(const edm::EventSetup &setup,
                                                    const ConstTrajTrackPairCollection &tracks,
                                                    const ExternalPredictionCollection &external,
-                                                   const reco::BeamSpot &beamSpot) const override;
+                                                   const reco::BeamSpot &beamSpot,
+                                                   edm::ConsumesCollector &iC) const override;
 
   CombinedTrajectoryFactory *clone() const override { return new CombinedTrajectoryFactory(*this); }
 
@@ -56,8 +58,8 @@ private:
 
 using namespace std;
 
-CombinedTrajectoryFactory::CombinedTrajectoryFactory(const edm::ParameterSet &config)
-    : TrajectoryFactoryBase(config), theUseAllFactories(config.getParameter<bool>("useAllFactories")) {
+CombinedTrajectoryFactory::CombinedTrajectoryFactory(const edm::ParameterSet &config, edm::ConsumesCollector &iC)
+    : TrajectoryFactoryBase(config, iC), theUseAllFactories(config.getParameter<bool>("useAllFactories")) {
   vector<string> factoryNames = config.getParameter<vector<string>>("TrajectoryFactoryNames");
   for (auto const &factoryName : factoryNames) {
     // auto_ptr to avoid missing a delete due to throw...
@@ -68,19 +70,22 @@ CombinedTrajectoryFactory::CombinedTrajectoryFactory(const edm::ParameterSet &co
                                         << "separated strings, but is '" << factoryName << "'";
     }
     const edm::ParameterSet factoryCfg = config.getParameter<edm::ParameterSet>(namePset->At(1)->GetName());
-    theFactories.emplace_back(TrajectoryFactoryPlugin::get()->create(namePset->At(0)->GetName(), factoryCfg));
+    theFactories.emplace_back(TrajectoryFactoryPlugin::get()->create(namePset->At(0)->GetName(), factoryCfg, iC));
   }
 }
 
 CombinedTrajectoryFactory::~CombinedTrajectoryFactory(void) {}
 
 const CombinedTrajectoryFactory::ReferenceTrajectoryCollection CombinedTrajectoryFactory::trajectories(
-    const edm::EventSetup &setup, const ConstTrajTrackPairCollection &tracks, const reco::BeamSpot &beamSpot) const {
+    const edm::EventSetup &setup,
+    const ConstTrajTrackPairCollection &tracks,
+    const reco::BeamSpot &beamSpot,
+    edm::ConsumesCollector &iC) const {
   ReferenceTrajectoryCollection trajectories;
   ReferenceTrajectoryCollection tmpTrajectories;  // outside loop for efficiency
 
   for (auto const &factory : theFactories) {
-    tmpTrajectories = factory->trajectories(setup, tracks, beamSpot);
+    tmpTrajectories = factory->trajectories(setup, tracks, beamSpot, iC);
     trajectories.insert(trajectories.end(), tmpTrajectories.begin(), tmpTrajectories.end());
 
     if (!theUseAllFactories && !trajectories.empty())
@@ -94,12 +99,13 @@ const CombinedTrajectoryFactory::ReferenceTrajectoryCollection CombinedTrajector
     const edm::EventSetup &setup,
     const ConstTrajTrackPairCollection &tracks,
     const ExternalPredictionCollection &external,
-    const reco::BeamSpot &beamSpot) const {
+    const reco::BeamSpot &beamSpot,
+    edm::ConsumesCollector &iC) const {
   ReferenceTrajectoryCollection trajectories;
   ReferenceTrajectoryCollection tmpTrajectories;  // outside loop for efficiency
 
   for (auto const &factory : theFactories) {
-    tmpTrajectories = factory->trajectories(setup, tracks, external, beamSpot);
+    tmpTrajectories = factory->trajectories(setup, tracks, external, beamSpot, iC);
     trajectories.insert(trajectories.end(), tmpTrajectories.begin(), tmpTrajectories.end());
 
     if (!theUseAllFactories && !trajectories.empty())

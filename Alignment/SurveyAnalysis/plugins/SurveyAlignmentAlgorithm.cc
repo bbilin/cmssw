@@ -11,8 +11,12 @@ SurveyAlignmentAlgorithm::SurveyAlignmentAlgorithm(const edm::ParameterSet& cfg,
       theIterations(cfg.getParameter<unsigned int>("nIteration")),
       theLevels(cfg.getParameter<std::vector<std::string> >("levels")) {}
 
-void SurveyAlignmentAlgorithm::initialize(
-    const edm::EventSetup&, AlignableTracker*, AlignableMuon*, AlignableExtras*, AlignmentParameterStore* store) {
+void SurveyAlignmentAlgorithm::initialize(const edm::EventSetup&,
+                                          AlignableTracker*,
+                                          AlignableMuon*,
+                                          AlignableExtras*,
+                                          AlignmentParameterStore* store,
+                                          edm::ConsumesCollector& iC) {
   std::vector<align::StructureType> levels;
 
   // FIXME: - currently defaulting to RunI as this was the previous behaviour
