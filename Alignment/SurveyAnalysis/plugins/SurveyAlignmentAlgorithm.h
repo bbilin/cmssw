@@ -24,21 +24,17 @@ class AlignableExtras;
 
 class SurveyAlignmentAlgorithm : public AlignmentAlgorithmBase {
 public:
-  SurveyAlignmentAlgorithm(const edm::ParameterSet &, const edm::ConsumesCollector &);
+  SurveyAlignmentAlgorithm(const edm::ParameterSet&, const edm::ConsumesCollector&);
 
   /// call at start of job
-  void initialize(const edm::EventSetup &,
-                  AlignableTracker *,
-                  AlignableMuon *,
-                  AlignableExtras *,
-                  AlignmentParameterStore *,
-                  edm::ConsumesCollector &iC) override;
+  void initialize(
+      const edm::EventSetup&, AlignableTracker*, AlignableMuon*, AlignableExtras*, AlignmentParameterStore*) override;
 
   /// call at end of job
-  void terminate(const edm::EventSetup &iSetup) override {}
+  void terminate(const edm::EventSetup& iSetup) override {}
 
   /// run for every event
-  void run(const edm::EventSetup &, const AlignmentAlgorithmBase::EventInfo &, edm::ConsumesCollector &iC) override {}
+  void run(const edm::EventSetup&, const AlignmentAlgorithmBase::EventInfo&) override {}
 
 private:
   std::string theOutfile;

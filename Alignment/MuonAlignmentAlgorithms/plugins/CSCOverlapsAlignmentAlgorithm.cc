@@ -199,8 +199,7 @@ void CSCOverlapsAlignmentAlgorithm::initialize(const edm::EventSetup& iSetup,
                                                AlignableTracker* alignableTracker,
                                                AlignableMuon* alignableMuon,
                                                AlignableExtras* alignableExtras,
-                                               AlignmentParameterStore* alignmentParameterStore,
-                                               edm::ConsumesCollector& iC) {
+                                               AlignmentParameterStore* alignmentParameterStore) {
   m_alignmentParameterStore = alignmentParameterStore;
   m_alignables = m_alignmentParameterStore->alignables();
 
@@ -250,9 +249,7 @@ void CSCOverlapsAlignmentAlgorithm::initialize(const edm::EventSetup& iSetup,
   }
 }
 
-void CSCOverlapsAlignmentAlgorithm::run(const edm::EventSetup& iSetup,
-                                        const EventInfo& eventInfo,
-                                        edm::ConsumesCollector& iC) {
+void CSCOverlapsAlignmentAlgorithm::run(const edm::EventSetup& iSetup, const EventInfo& eventInfo) {
   edm::ESHandle<Propagator> propagator;
   if (m_slopeFromTrackRefit) {
     iSetup.getHandle(m_propToken);

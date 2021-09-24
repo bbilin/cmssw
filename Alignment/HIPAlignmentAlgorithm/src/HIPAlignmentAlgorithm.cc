@@ -125,8 +125,7 @@ void HIPAlignmentAlgorithm::initialize(const edm::EventSetup& setup,
                                        AlignableTracker* tracker,
                                        AlignableMuon* muon,
                                        AlignableExtras* extras,
-                                       AlignmentParameterStore* store,
-                                       edm::ConsumesCollector& iC) {
+                                       AlignmentParameterStore* store) {
   edm::LogInfo("Alignment") << "@SUB=HIPAlignmentAlgorithm::initialize"
                             << "Initializing...";
 
@@ -728,7 +727,7 @@ bool HIPAlignmentAlgorithm::processHit2D(const AlignableDetOrUnitPtr& alidet,
 }
 
 // Run the algorithm on trajectories and tracks -------------------------------
-void HIPAlignmentAlgorithm::run(const edm::EventSetup& setup, const EventInfo& eventInfo, edm::ConsumesCollector& iC) {
+void HIPAlignmentAlgorithm::run(const edm::EventSetup& setup, const EventInfo& eventInfo) {
   if (isCollector)
     return;
 

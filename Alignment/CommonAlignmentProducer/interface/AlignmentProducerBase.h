@@ -87,10 +87,10 @@ protected:
   void terminateProcessing(const edm::EventSetup* = nullptr);
 
   /// Process event
-  bool processEvent(const edm::Event&, const edm::EventSetup&, edm::ConsumesCollector);
+  bool processEvent(const edm::Event&, const edm::EventSetup&);
 
   /// begin run
-  void beginRunImpl(const edm::Run&, const edm::EventSetup&, edm::ConsumesCollector);
+  void beginRunImpl(const edm::Run&, const edm::EventSetup&);
 
   /// end run
   void endRunImpl(const edm::Run&, const edm::EventSetup&);
@@ -105,7 +105,7 @@ protected:
 
   /// Creates Geometry and Alignables of the Tracker and initializes the
   /// AlignmentAlgorithm @alignmentAlgo_
-  void initAlignmentAlgorithm(const edm::EventSetup&, edm::ConsumesCollector, bool update = false);
+  void initAlignmentAlgorithm(const edm::EventSetup&, bool update = false);
 
   /// Steers activities after end of job, terminates the AlignmentAlgorithm
   /// @alignmentAlgo_
