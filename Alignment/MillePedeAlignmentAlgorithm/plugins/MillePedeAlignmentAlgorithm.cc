@@ -131,8 +131,7 @@ void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup,
                                              AlignableTracker *tracker,
                                              AlignableMuon *muon,
                                              AlignableExtras *extras,
-                                             AlignmentParameterStore *store,
-                                             edm::ConsumesCollector &iC) {
+                                             AlignmentParameterStore *store) {
   if (muon) {
     edm::LogWarning("Alignment") << "@SUB=MillePedeAlignmentAlgorithm::initialize"
                                  << "Running with AlignabeMuon not yet tested.";
@@ -276,7 +275,7 @@ void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup,
     // Get trajectory factory. In case nothing found, FrameWork will throw...
     const edm::ParameterSet fctCfg(theConfig.getParameter<edm::ParameterSet>("TrajectoryFactory"));
     const std::string fctName(fctCfg.getParameter<std::string>("TrajectoryFactoryName"));
-    theTrajectoryFactory = TrajectoryFactoryPlugin::get()->create(fctName, fctCfg, iC);
+    theTrajectoryFactory = TrajectoryFactoryPlugin::get()->create(fctName, fctCfg);
   }
 
   if (this->isMode(myPedeSteerBit)) {
@@ -461,9 +460,7 @@ std::vector<std::string> MillePedeAlignmentAlgorithm::getExistingFormattedFiles(
 
 // Run the algorithm on trajectories and tracks -------------------------------
 //____________________________________________________
-void MillePedeAlignmentAlgorithm::run(const edm::EventSetup &setup,
-                                      const EventInfo &eventInfo,
-                                      edm::ConsumesCollector &iC) {
+void MillePedeAlignmentAlgorithm::run(const edm::EventSetup &setup, const EventInfo &eventInfo) {
   if (!this->isMode(myMilleBit))
     return;  // no theMille created...
   const auto &tracks = eventInfo.trajTrackPairs();
@@ -474,7 +471,7 @@ void MillePedeAlignmentAlgorithm::run(const edm::EventSetup &setup,
     }
   }
 
-  const RefTrajColl trajectories(theTrajectoryFactory->trajectories(setup, tracks, eventInfo.beamSpot(), iC));
+  const RefTrajColl trajectories(theTrajectoryFactory->trajectories(setup, tracks, eventInfo.beamSpot()));
 
   // Now loop over ReferenceTrajectoryCollection
   unsigned int refTrajCount = 0;  // counter for track monitoring

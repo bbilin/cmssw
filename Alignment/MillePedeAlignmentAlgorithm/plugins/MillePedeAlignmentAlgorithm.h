@@ -69,8 +69,7 @@ public:
                   AlignableTracker *tracker,
                   AlignableMuon *muon,
                   AlignableExtras *extras,
-                  AlignmentParameterStore *store,
-                  edm::ConsumesCollector &iC) override;
+                  AlignmentParameterStore *store) override;
 
   /// Returns whether MP supports calibrations
   bool supportsCalibrations() override;
@@ -91,7 +90,7 @@ public:
   bool storeAlignments() override;
 
   /// Run the algorithm on trajectories and tracks
-  void run(const edm::EventSetup &setup, const EventInfo &eventInfo, edm::ConsumesCollector &iC) override;
+  void run(const edm::EventSetup &setup, const EventInfo &eventInfo) override;
 
   /// called at begin of run
   void beginRun(const edm::Run &run, const edm::EventSetup &setup, bool changed) override;
