@@ -113,6 +113,7 @@ public:
 
   /// Constructor
   AlignmentAlgorithmBase(const edm::ParameterSet &, const edm::ConsumesCollector &){};
+  AlignmentAlgorithmBase(const edm::ParameterSet &, const edm::ConsumesCollector &, edm::EventSetup &, EventInfo &){};
 
   /// Destructor
   virtual ~AlignmentAlgorithmBase(){};
