@@ -11,9 +11,8 @@
 ///  $Date: 2012/08/10 09:01:11 $
 ///  (last update by $Author: flucke $)
 
-#include "Alignment/CommonAlignmentAlgorithm/interface/MPAlignmentAlgorithmPluginFactory.h"
+#include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
-#include "Alignment/ReferenceTrajectories/interface/TrajectoryFactoryBase.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
@@ -60,11 +59,8 @@ class TrajectoryFactoryBase;
 class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase {
 public:
   /// Constructor
-  MillePedeAlignmentAlgorithm(const edm::ParameterSet &cfg,
-                              edm::ConsumesCollector &iC,
-                              edm::EventSetup &setup,
-                              EventInfo &eventInfo);
-  //  MillePedeAlignmentAlgorithm(const edm::ParameterSet &cfg, edm::ConsumesCollector &iC);
+  MillePedeAlignmentAlgorithm(const edm::ParameterSet &cfg, edm::ConsumesCollector &iC);
+
   /// Destructor
   ~MillePedeAlignmentAlgorithm() override;
 
@@ -284,7 +280,6 @@ private:
   bool addHits(const align::Alignables &alis, const std::vector<AlignmentUserVariables *> &mpVars) const;
 
   edm::ParameterSet theConfig;
-
   unsigned int theMode;
   std::string theDir;  /// directory for all kind of files
   AlignmentParameterStore *theAlignmentParameterStore;
@@ -295,11 +290,6 @@ private:
   std::shared_ptr<PedeLabelerBase> thePedeLabels;
   std::unique_ptr<PedeSteerer> thePedeSteer;
   std::unique_ptr<TrajectoryFactoryBase> theTrajectoryFactory;
-
-  typedef TrajectoryFactoryBase::ReferenceTrajectoryCollection RefTrajColl;
-
-  const RefTrajColl trajectories;
-
   std::vector<IntegratedCalibrationBase *> theCalibrations;
   std::shared_ptr<AlignPCLThresholds> theThresholds;
   unsigned int theMinNumHits;
@@ -327,5 +317,5 @@ private:
   align::RunNumber lastProcessedRun_;
 };
 
-DEFINE_EDM_PLUGIN(MPAlignmentAlgorithmPluginFactory, MillePedeAlignmentAlgorithm, "MillePedeAlignmentAlgorithm");
+DEFINE_EDM_PLUGIN(AlignmentAlgorithmPluginFactory, MillePedeAlignmentAlgorithm, "MillePedeAlignmentAlgorithm");
 #endif

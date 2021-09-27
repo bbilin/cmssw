@@ -84,10 +84,7 @@ using namespace gbl;
 
 // Constructor ----------------------------------------------------------------
 //____________________________________________________
-MillePedeAlignmentAlgorithm::MillePedeAlignmentAlgorithm(const edm::ParameterSet &cfg,
-                                                         edm::ConsumesCollector &iC,
-                                                         edm::EventSetup &setup,
-                                                         EventInfo &eventInfo)
+MillePedeAlignmentAlgorithm::MillePedeAlignmentAlgorithm(const edm::ParameterSet &cfg, edm::ConsumesCollector &iC)
     : AlignmentAlgorithmBase(cfg, iC),
       topoToken_(iC.esConsumes<TrackerTopology, TrackerTopologyRcd, edm::Transition::BeginRun>()),
       aliThrToken_(iC.esConsumes<AlignPCLThresholds, AlignPCLThresholdsRcd, edm::Transition::BeginRun>()),
@@ -96,11 +93,6 @@ MillePedeAlignmentAlgorithm::MillePedeAlignmentAlgorithm(const edm::ParameterSet
       theDir(theConfig.getUntrackedParameter<std::string>("fileDir")),
       theAlignmentParameterStore(nullptr),
       theAlignables(),
-      theTrajectoryFactory(
-          TrajectoryFactoryPlugin::get()->create(theConfig.getParameter<edm::ParameterSet>("TrajectoryFactory")
-                                                     .getParameter<std::string>("TrajectoryFactoryName"),
-                                                 theConfig.getParameter<edm::ParameterSet>("TrajectoryFactory"),
-                                                 iC)),
       theMinNumHits(cfg.getParameter<unsigned int>("minNumHits")),
       theMaximalCor2D(cfg.getParameter<double>("max2Dcorrelation")),
       firstIOV_(cfg.getUntrackedParameter<AlignmentAlgorithmBase::RunNumber>("firstIOV")),
@@ -126,8 +118,6 @@ MillePedeAlignmentAlgorithm::MillePedeAlignmentAlgorithm(const edm::ParameterSet
     // use same file for GBL
     theBinary = std::make_unique<MilleBinary>((theDir + theConfig.getParameter<std::string>("binaryFile")).c_str(),
                                               theGblDoubleBinary);
-    const auto &tracks = eventInfo.trajTrackPairs();
-    const RefTrajColl trajectories(theTrajectoryFactory->trajectories(setup, tracks, eventInfo.beamSpot(), iC));
   }
 }
 
@@ -283,6 +273,9 @@ void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup,
       theMonitor = std::make_unique<MillePedeMonitor>(tTopo, (theDir + moniFile).c_str());
 
     // Get trajectory factory. In case nothing found, FrameWork will throw...
+    const edm::ParameterSet fctCfg(theConfig.getParameter<edm::ParameterSet>("TrajectoryFactory"));
+    const std::string fctName(fctCfg.getParameter<std::string>("TrajectoryFactoryName"));
+    theTrajectoryFactory = TrajectoryFactoryPlugin::get()->create(fctName, fctCfg);
   }
 
   if (this->isMode(myPedeSteerBit)) {
@@ -478,6 +471,7 @@ void MillePedeAlignmentAlgorithm::run(const edm::EventSetup &setup, const EventI
     }
   }
 
+  const RefTrajColl trajectories(theTrajectoryFactory->trajectories(setup, tracks, eventInfo.beamSpot()));
 
   // Now loop over ReferenceTrajectoryCollection
   unsigned int refTrajCount = 0;  // counter for track monitoring
