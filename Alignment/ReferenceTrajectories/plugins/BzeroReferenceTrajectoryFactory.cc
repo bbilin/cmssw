@@ -20,8 +20,10 @@
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-BzeroReferenceTrajectoryFactory::BzeroReferenceTrajectoryFactory(const edm::ParameterSet &config)
-    : TrajectoryFactoryBase(config),
+BzeroReferenceTrajectoryFactory::BzeroReferenceTrajectoryFactory(const edm::ParameterSet &config,
+                                                                 edm::ConsumesCollector &iC)
+    : TrajectoryFactoryBase(config, iC),
+      m_MagFieldToken(iC.esConsumes()),
       theMass(config.getParameter<double>("ParticleMass")),
       theMomentumEstimate(config.getParameter<double>("MomentumEstimate")) {
   edm::LogInfo("Alignment") << "@SUB=BzeroReferenceTrajectoryFactory"
@@ -32,11 +34,12 @@ BzeroReferenceTrajectoryFactory::~BzeroReferenceTrajectoryFactory(void) {}
 
 /////////////////////////////////////////////////////////////////////
 const BzeroReferenceTrajectoryFactory::ReferenceTrajectoryCollection BzeroReferenceTrajectoryFactory::trajectories(
-    const edm::EventSetup &setup, const ConstTrajTrackPairCollection &tracks, const reco::BeamSpot &beamSpot) const {
+    const edm::EventSetup &setup,
+    const ConstTrajTrackPairCollection &tracks,
+    const reco::BeamSpot &beamSpot) const {
   ReferenceTrajectoryCollection trajectories;
 
-  edm::ESHandle<MagneticField> magneticField;
-  setup.get<IdealMagneticFieldRecord>().get(magneticField);
+  const MagneticField *magneticField = &setup.getData(m_MagFieldToken);
 
   ConstTrajTrackPairCollection::const_iterator itTracks = tracks.begin();
 
@@ -51,7 +54,7 @@ const BzeroReferenceTrajectoryFactory::ReferenceTrajectoryCollection BzeroRefere
       // set the flag for reversing the RecHits to false, since they are already in the correct order.
       config.hitsAreReverse = false;
       trajectories.push_back(ReferenceTrajectoryPtr(
-          new BzeroReferenceTrajectory(input.first, input.second, magneticField.product(), beamSpot, config)));
+          new BzeroReferenceTrajectory(input.first, input.second, magneticField, beamSpot, config)));
     }
 
     ++itTracks;
@@ -76,8 +79,7 @@ const BzeroReferenceTrajectoryFactory::ReferenceTrajectoryCollection BzeroRefere
     return trajectories;
   }
 
-  edm::ESHandle<MagneticField> magneticField;
-  setup.get<IdealMagneticFieldRecord>().get(magneticField);
+  const MagneticField *magneticField = &setup.getData(m_MagFieldToken);
 
   ConstTrajTrackPairCollection::const_iterator itTracks = tracks.begin();
   ExternalPredictionCollection::const_iterator itExternal = external.begin();
@@ -94,7 +96,7 @@ const BzeroReferenceTrajectoryFactory::ReferenceTrajectoryCollection BzeroRefere
         // set the flag for reversing the RecHits to false, since they are already in the correct order.
         config.hitsAreReverse = false;
         ReferenceTrajectoryPtr refTraj(
-            new BzeroReferenceTrajectory(*itExternal, input.second, magneticField.product(), beamSpot, config));
+            new BzeroReferenceTrajectory(*itExternal, input.second, magneticField, beamSpot, config));
 
         AlgebraicSymMatrix externalParamErrors(asHepMatrix<5>((*itExternal).localError().matrix()));
         refTraj->setParameterErrors(externalParamErrors.sub(2, 5));
@@ -108,7 +110,7 @@ const BzeroReferenceTrajectoryFactory::ReferenceTrajectoryCollection BzeroRefere
         // set the flag for reversing the RecHits to false, since they are already in the correct order.
         config.hitsAreReverse = false;
         trajectories.push_back(ReferenceTrajectoryPtr(
-            new BzeroReferenceTrajectory(input.first, input.second, magneticField.product(), beamSpot, config)));
+            new BzeroReferenceTrajectory(input.first, input.second, magneticField, beamSpot, config)));
       }
     }
 
